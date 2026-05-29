@@ -1,5 +1,4 @@
 streamlit
 boto3
-json
 time
 uuid
