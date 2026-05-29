@@ -18,12 +18,26 @@ st.set_page_config(
     layout="centered"
 )
 
-col1, col2, col3 = st.columns([1, 4, 1])
-with col1:
-    st.image("logo.png", width=100)
-with col2:
-    st.markdown("<h1 style='text-align:center;'>FarmazzineBot</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; color:gray;'>Consulte preços e disponibilidade na Farma Ponte e Drogaria Vera Cruz</p>", unsafe_allow_html=True)
+import os
+import base64
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+logo_path = os.path.join(BASE_DIR, "logo.png")
+
+with open(logo_path, "rb") as f:
+    img_base64 = base64.b64encode(f.read()).decode()
+
+st.markdown(
+    f"""
+    <div style="text-align:center; margin-top:10px;">
+        <img src="data:image/png;base64,{img_base64}" width="500"/>
+        <p style="color:gray; margin-top:8px;">
+            Consulte preços e disponibilidade na Farma Ponte e Drogaria Vera Cruz
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # ─── SESSÃO ──────────────────────────────────────────────────────────────────
 if "messages" not in st.session_state:
