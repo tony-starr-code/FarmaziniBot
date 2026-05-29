@@ -88,7 +88,7 @@ st.set_page_config(
 st.markdown("""
 <style>
     .stApp {
-        background-color: #FFF0F3;
+        background-color: #FCDCE3;
     }
     .stChatInput > div {
         background-color: #FFE4EA !important;
