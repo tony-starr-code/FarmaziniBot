@@ -9,7 +9,12 @@ STEP_FUNCTION_ARN = "arn:aws:states:us-east-2:906513713169:stateMachine:testeequ
 REGIAO = "us-east-2"
 
 # ─── CLIENTE AWS ─────────────────────────────────────────────────────────────
-client = boto3.client("stepfunctions", region_name=REGIAO)
+client = boto3.client(
+    "stepfunctions",
+    aws_access_key_id=st.secrets["AWS_ACCESS_KEY_ID"],
+    aws_secret_access_key=st.secrets["AWS_SECRET_ACCESS_KEY"],
+    region_name=st.secrets["AWS_DEFAULT_REGION"]
+)
 
 # ─── INTERFACE ───────────────────────────────────────────────────────────────
 st.set_page_config(
