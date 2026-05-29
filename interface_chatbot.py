@@ -153,9 +153,9 @@ if "sugestoes" not in st.session_state:
 
 # ─── PERGUNTAS RÁPIDAS INICIAIS ───────────────────────────────────────────────
 PERGUNTAS_RAPIDAS = [
-    "💊 Preço da Dipirona?",
-    "🩺 Tem Amoxicilina?",
-    "💉 Preço da insulina?",
+    "💊 Marcas de Dipirona e preços",
+    "🩺 Comparar farmácias",
+    "💉 Preço do Dorflex?",
     "🧴 Tem protetor solar?",
     "💰 Remédios em promoção?",
 ]
