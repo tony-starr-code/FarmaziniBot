@@ -126,7 +126,7 @@ st.markdown(
     f"""
     <div style="text-align:center; margin-top:10px;">
         <img src="data:image/png;base64,{img_base64}" width="500"/>
-        <p style="color:#999; margin-top:8px;">
+        <p style="color:#faaca7; margin-top:8px;">
             Consulte preços e disponibilidade na Farma Ponte e Drogaria Vera Cruz
         </p>
     </div>
