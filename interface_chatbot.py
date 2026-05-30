@@ -195,7 +195,7 @@ st.markdown("""
     }
     .mensagem-boas-vindas {
         background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
-        border: 1.5px solid #F5B8C8;
+        border: 1.5px solid #CC0000;
         border-radius: 18px 18px 18px 4px;
         padding: 16px 20px;
         margin: 12px 0 20px 0;
