@@ -91,9 +91,9 @@ st.markdown("""
         background-color: #FCE0DE;
     }
     .stChatInput > div {
-        background-color: #FFE4EA !important;
+        background-color: #FCE0DE !important;
         border-radius: 24px !important;
-        border: 1px solid #F5B8C8 !important;
+        border: 1px solid #CC0000 !important;
     }
     .block-container {
         background-color: transparent !important;
@@ -101,14 +101,14 @@ st.markdown("""
     div[data-testid="stButton"] button {
         background-color: #fff;
         color: #CC0000;
-        border: 1.5px solid #F5B8C8;
+        border: 1.5px solid #CC0000;
         border-radius: 20px;
         font-size: 13px;
         padding: 6px 12px;
         width: 100%;
     }
     div[data-testid="stButton"] button:hover {
-        background-color: #FFE4EA;
+        background-color: #FCE0DE;
         border-color: #CC0000;
         color: #CC0000;
     }
