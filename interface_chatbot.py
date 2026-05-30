@@ -244,9 +244,11 @@ def enviar_pergunta(prompt):
                 if status == "SUCCEEDED":
                     output = json.loads(result["output"])
                     resposta = output.get("resposta", "Não foi possível obter resposta.")
+                    grafico_url = output.get("grafico_url", None)
                     break
                 elif status in ["FAILED", "TIMED_OUT", "ABORTED"]:
                     resposta = "Erro ao processar a consulta. Tente novamente."
+                    grafico_url = None
                     break
                 time.sleep(1)
 
@@ -265,6 +267,8 @@ def enviar_pergunta(prompt):
         </div>
     </div>
     """, unsafe_allow_html=True)
+    if grafico_url:
+        st.image(grafico_url, use_container_width=True)
 
     # Gera sugestões de próximas perguntas
     with st.spinner("Gerando sugestões..."):
