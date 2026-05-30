@@ -337,6 +337,7 @@ if st.session_state.sugestoes:
 def enviar_pergunta(prompt):
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.session_state.sugestoes = []
+    grafico_url = None
 
     st.markdown(f"""
     <div style="display:flex; justify-content:flex-end; margin:8px 0;">
