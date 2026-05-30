@@ -267,8 +267,6 @@ if len(st.session_state.messages) == 0:
                 <li>💊 <strong>Preços</strong> de medicamentos e produtos</li>
                 <li>🏪 <strong>Disponibilidade</strong> nas duas farmácias</li>
                 <li>🔄 <strong>Comparação</strong> entre marcas e genéricos</li>
-                <li>📋 <strong>Informações</strong> sobre receitas e restrições</li>
-                <li>🛵 <strong>Entrega</strong> e formas de atendimento</li>
             </ul>
             É só me perguntar! 😊
         </div>
@@ -370,7 +368,7 @@ def enviar_pergunta(prompt):
                     resposta = output.get("resposta", "Não foi possível obter resposta.")
                     break
                 elif status in ["FAILED", "TIMED_OUT", "ABORTED"]:
-                    resposta = "Erro ao processar a consulta. Tente novamente."
+                    resposta = "Não possuo a base de dados necessária para responder essa pergunta, ou o produto não existe nas farmácias Vera Cruz e Farma Ponte. Você tem alguma outra pergunta?"
                     break
                 time.sleep(1)
 
