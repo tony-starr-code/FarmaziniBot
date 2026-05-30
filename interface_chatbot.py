@@ -56,29 +56,19 @@ def gerar_sugestoes_fallback(pergunta, resposta):
             "O preço é o mesmo nas duas farmácias?",
         ],
         "genérico": [
-            "Qual a diferença entre genérico e referência?",
-            "O genérico tem a mesma eficácia?",
             "Quais marcas de genérico têm disponíveis?",
         ],
-        "receita": [
-            "Onde posso obter essa receita?",
-            "Precisa de receita especial ou comum?",
-            "Tem algum similar que não precisa de receita?",
-        ],
         "disponível": [
-            "Quando esse produto volta ao estoque?",
+            "Qual a disponibilidade desse produto?",
             "Tem na outra farmácia?",
-            "Posso reservar para retirada?",
         ],
         "dipirona": [
-            "Qual a dose recomendada de Dipirona?",
             "Tem Dipirona infantil?",
             "Dipirona líquida está disponível?",
         ],
         "dorflex": [
-            "Dorflex precisa de receita?",
+            "Quais marcas de Dorflex tem na Vera Cruz?",
             "Tem algum similar ao Dorflex?",
-            "Qual a diferença entre Dorflex e Miosan?",
         ],
         "vitamina": [
             "Quais marcas de vitamina C têm?",
@@ -90,15 +80,8 @@ def gerar_sugestoes_fallback(pergunta, resposta):
             "Tem protetor solar infantil?",
             "Protetor solar facial está disponível?",
         ],
-        "entrega": [
-            "Qual o prazo de entrega?",
-            "Tem entrega no mesmo dia?",
-            "Qual o valor mínimo para entrega grátis?",
-        ],
         "farmácia": [
             "Qual farmácia tem o menor preço?",
-            "Qual o horário de funcionamento?",
-            "Como entrar em contato com a farmácia?",
         ],
     }
 
@@ -117,7 +100,6 @@ def gerar_sugestoes_fallback(pergunta, resposta):
         "Precisa de receita para comprar?",
         "Tem promoção essa semana?",
         "Qual a diferença entre as marcas?",
-        "Como funciona a entrega?",
         "Tem opção infantil desse produto?",
         "Qual a dosagem recomendada?",
     ]
