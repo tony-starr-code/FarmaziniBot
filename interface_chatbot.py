@@ -285,7 +285,7 @@ PERGUNTAS_RAPIDAS = [
 if len(st.session_state.messages) == 0:
     st.markdown("""
     <div style="text-align:center; margin: 8px 0 8px;">
-        <span style="font-size:13px; color:#999;">Perguntas frequentes:</span>
+        <span style="font-size:13px; color:#b87f7b;">Perguntas frequentes:</span>
     </div>
     """, unsafe_allow_html=True)
 
