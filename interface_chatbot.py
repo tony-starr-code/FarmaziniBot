@@ -88,10 +88,10 @@ st.set_page_config(
 st.markdown("""
 <style>
     .stApp {
-        background-color: #FCE0DE;
+        background-color: #ffeceb;
     }
     .stChatInput > div {
-        background-color: #FCE0DE !important;
+        background-color: #ffeceb !important;
         border-radius: 24px !important;
         border: 1px solid #CC0000 !important;
     }
@@ -108,7 +108,7 @@ st.markdown("""
         width: 100%;
     }
     div[data-testid="stButton"] button:hover {
-        background-color: #FCE0DE;
+        background-color: #ffeceb;
         border-color: #CC0000;
         color: #CC0000;
     }
