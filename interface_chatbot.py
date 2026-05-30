@@ -5,6 +5,7 @@ import time
 import uuid
 import os
 import base64
+import random
 
 # ─── CONFIGURAÇÕES ───────────────────────────────────────────────────────────
 STEP_FUNCTION_ARN = "arn:aws:states:us-east-2:906513713169:stateMachine:testeequipe3"
@@ -41,14 +42,85 @@ def salvar_historico(session_id, messages):
         ContentType="application/json"
     )
 
+def gerar_sugestoes_fallback(pergunta, resposta):
+    """
+    Gera sugestões de fallback contextuais analisando palavras-chave
+    da pergunta e resposta, em vez de retornar sempre as mesmas.
+    """
+    texto = (pergunta + " " + resposta).lower()
+
+    banco_sugestoes = {
+        "preço": [
+            "Tem alguma promoção disponível?",
+            "Qual o genérico mais barato?",
+            "O preço é o mesmo nas duas farmácias?",
+        ],
+        "genérico": [
+            "Quais marcas de genérico têm disponíveis?",
+        ],
+        "disponível": [
+            "Qual a disponibilidade desse produto?",
+            "Tem na outra farmácia?",
+        ],
+        "dipirona": [
+            "Tem Dipirona infantil?",
+            "Dipirona líquida está disponível?",
+        ],
+        "dorflex": [
+            "Quais marcas de Dorflex tem na Vera Cruz?",
+            "Tem algum similar ao Dorflex?",
+        ],
+        "vitamina": [
+            "Quais marcas de vitamina C têm?",
+            "Tem vitamina D disponível?",
+            "Combo vitamínico está em promoção?",
+        ],
+        "protetor": [
+            "Qual protetor solar tem FPS 50+?",
+            "Tem protetor solar infantil?",
+            "Protetor solar facial está disponível?",
+        ],
+        "farmácia": [
+            "Qual farmácia tem o menor preço?",
+        ],
+    }
+
+    sugestoes_encontradas = []
+    for palavra_chave, opcoes in banco_sugestoes.items():
+        if palavra_chave in texto:
+            sugestoes_encontradas.extend(opcoes)
+
+    if len(sugestoes_encontradas) >= 3:
+        return random.sample(sugestoes_encontradas, 3)
+
+    # Fallback genérico com aleatoriedade
+    genericas = [
+        "Tem esse remédio nas duas farmácias?",
+        "Qual o genérico mais barato para isso?",
+        "Precisa de receita para comprar?",
+        "Tem promoção essa semana?",
+        "Qual a diferença entre as marcas?",
+        "Tem opção infantil desse produto?",
+        "Qual a dosagem recomendada?",
+    ]
+    return random.sample(genericas, 3)
+
+
 def gerar_sugestoes(pergunta, resposta):
     """Gera 3 sugestões de próximas perguntas com base no contexto."""
-    prompt_sugestoes = f"""Com base nessa conversa sobre farmácia:
-Pergunta do usuário: {pergunta}
+    prompt_sugestoes = f"""Você é um assistente de farmácia. Com base nessa troca de mensagens, gere exatamente 3 sugestões de perguntas que o cliente pode querer fazer em seguida.
+
+Pergunta do cliente: {pergunta}
 Resposta do bot: {resposta}
 
-Gere exatamente 3 sugestões curtas de próximas perguntas que o usuário pode querer fazer.
-Responda APENAS com um JSON assim, sem mais nada:
+Regras:
+- As sugestões devem ser diretamente relacionadas ao assunto da conversa
+- Cada pergunta deve ser diferente das outras e explorar um ângulo distinto (ex: preço, disponibilidade, alternativas, dosagem, receita)
+- Frases curtas, no máximo 10 palavras cada
+- Não repita perguntas óbvias que já foram respondidas
+- Responda APENAS com JSON válido, sem nenhum texto adicional, sem markdown, sem explicações
+
+Formato exato:
 {{"sugestoes": ["pergunta 1", "pergunta 2", "pergunta 3"]}}"""
 
     try:
@@ -62,20 +134,29 @@ Responda APENAS com um JSON assim, sem mais nada:
             modelId="amazon.titan-text-express-v1",
             body=json.dumps({
                 "inputText": prompt_sugestoes,
-                "textGenerationConfig": {"maxTokenCount": 200, "temperature": 0.7}
+                "textGenerationConfig": {
+                    "maxTokenCount": 200,
+                    "temperature": 0.9,   # Mais temperatura = mais variedade
+                    "topP": 0.9
+                }
             })
         )
         body = json.loads(response["body"].read())
         texto = body["results"][0]["outputText"]
         inicio = texto.find("{")
         fim = texto.rfind("}") + 1
-        return json.loads(texto[inicio:fim]).get("sugestoes", [])[:3]
+        if inicio == -1 or fim == 0:
+            raise ValueError("JSON não encontrado na resposta")
+        sugestoes = json.loads(texto[inicio:fim]).get("sugestoes", [])
+        # Garante exatamente 3 sugestões não vazias
+        sugestoes = [s for s in sugestoes if s.strip()][:3]
+        if len(sugestoes) < 3:
+            raise ValueError("Menos de 3 sugestões retornadas")
+        return sugestoes
     except Exception:
-        return [
-            "Tem esse remédio na Drogaria Vera Cruz?",
-            "Qual o genérico mais barato?",
-            "Precisa de receita para comprar?"
-        ]
+        # Fallback dinâmico e contextual em vez de 3 perguntas fixas
+        return gerar_sugestoes_fallback(pergunta, resposta)
+
 
 # ─── INTERFACE ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -88,12 +169,12 @@ st.set_page_config(
 st.markdown("""
 <style>
     .stApp {
-        background-color: #FAE5CD;
+        background-color: #ffeceb;
     }
     .stChatInput > div {
-        background-color: #FFE4EA !important;
+        background-color: #ffeceb !important;
         border-radius: 24px !important;
-        border: 1px solid #F5B8C8 !important;
+        border: 1px solid #CC0000 !important;
     }
     .block-container {
         background-color: transparent !important;
@@ -101,16 +182,40 @@ st.markdown("""
     div[data-testid="stButton"] button {
         background-color: #fff;
         color: #CC0000;
-        border: 1.5px solid #F5B8C8;
+        border: 1.5px solid #CC0000;
         border-radius: 20px;
         font-size: 13px;
         padding: 6px 12px;
         width: 100%;
     }
     div[data-testid="stButton"] button:hover {
-        background-color: #FFE4EA;
+        background-color: #ffeceb;
         border-color: #CC0000;
         color: #CC0000;
+    }
+    .mensagem-boas-vindas {
+        background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+        border: 1.5px solid #CC0000;
+        border-radius: 18px 18px 18px 4px;
+        padding: 16px 20px;
+        margin: 12px 0 20px 0;
+        color: #1A1A1A;
+        font-size: 15px;
+        line-height: 1.6;
+        max-width: 80%;
+    }
+    .mensagem-boas-vindas .titulo {
+        font-weight: 700;
+        color: #CC0000;
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+    .mensagem-boas-vindas ul {
+        margin: 8px 0 4px 0;
+        padding-left: 20px;
+    }
+    .mensagem-boas-vindas li {
+        margin-bottom: 4px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -126,7 +231,7 @@ st.markdown(
     f"""
     <div style="text-align:center; margin-top:10px;">
         <img src="data:image/png;base64,{img_base64}" width="500"/>
-        <p style="color:#999; margin-top:8px;">
+        <p style="color:#b87f7b; margin-top:8px;">
             Consulte preços e disponibilidade na Farma Ponte e Drogaria Vera Cruz
         </p>
     </div>
@@ -151,6 +256,23 @@ if "quick_prompt" not in st.session_state:
 if "sugestoes" not in st.session_state:
     st.session_state.sugestoes = []
 
+# ─── MENSAGEM DE BOAS-VINDAS ──────────────────────────────────────────────────
+if len(st.session_state.messages) == 0:
+    st.markdown("""
+    <div style="display:flex; justify-content:flex-start; margin:8px 0;">
+        <div class="mensagem-boas-vindas">
+            <div class="titulo">👋 Olá! Eu sou o FarmazziniBot</div>
+            Seu assistente virtual das farmácias <strong>Farma Ponte</strong> e <strong>Drogaria Vera Cruz</strong>. Estou aqui para te ajudar com:
+            <ul>
+                <li>💊 <strong>Preços</strong> de medicamentos e produtos</li>
+                <li>🏪 <strong>Disponibilidade</strong> nas duas farmácias</li>
+                <li>🔄 <strong>Comparação</strong> entre marcas e genéricos</li>
+            </ul>
+            É só me perguntar! 😊
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
 # ─── PERGUNTAS RÁPIDAS INICIAIS ───────────────────────────────────────────────
 PERGUNTAS_RAPIDAS = [
     "💊 Marcas de Dipirona e preços",
@@ -162,8 +284,8 @@ PERGUNTAS_RAPIDAS = [
 
 if len(st.session_state.messages) == 0:
     st.markdown("""
-    <div style="text-align:center; margin: 24px 0 8px;">
-        <span style="font-size:13px; color:#999;">Perguntas frequentes:</span>
+    <div style="text-align:center; margin: 8px 0 8px;">
+        <span style="font-size:13px; color:#b87f7b;">Perguntas frequentes:</span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -247,8 +369,7 @@ def enviar_pergunta(prompt):
                     grafico_url = output.get("grafico_url", None)
                     break
                 elif status in ["FAILED", "TIMED_OUT", "ABORTED"]:
-                    resposta = "Erro ao processar a consulta. Tente novamente."
-                    grafico_url = None
+                    resposta = "Não possuo a base de dados necessária para responder essa pergunta, ou o produto não existe nas farmácias Vera Cruz e Farma Ponte. Você tem alguma outra pergunta?"
                     break
                 time.sleep(1)
 
