@@ -154,8 +154,9 @@ Formato exato:
         if len(sugestoes) < 3:
             raise ValueError("Menos de 3 sugestões retornadas")
         return sugestoes
-    except Exception:
+    except Exception as e:
         # Fallback dinâmico e contextual em vez de 3 perguntas fixas
+        print(f"Erro ao gerar sugestões: {str(e)}")
         return gerar_sugestoes_fallback(pergunta, resposta)
 
 
