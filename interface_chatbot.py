@@ -27,6 +27,7 @@ s3 = boto3.client(
 )
 
 # ─── FUNÇÕES S3 ──────────────────────────────────────────────────────────────
+
 def carregar_historico(session_id):
     try:
         obj = s3.get_object(Bucket=S3_BUCKET, Key=f"{session_id}.json")
@@ -297,6 +298,9 @@ if len(st.session_state.messages) == 0:
                 st.rerun()
 
 # ─── HISTÓRICO ───────────────────────────────────────────────────────────────
+if "grafico_url_pendente" not in st.session_state:
+    st.session_state.grafico_url_pendente = None
+
 for message in st.session_state.messages:
     if message["role"] == "user":
         st.markdown(f"""
@@ -317,6 +321,9 @@ for message in st.session_state.messages:
             </div>
         </div>
         """, unsafe_allow_html=True)
+if st.session_state.grafico_url_pendente:
+    st.image(st.session_state.grafico_url_pendente, use_container_width=True)
+    st.session_state.grafico_url_pendente = None
 
 # ─── SUGESTÕES APÓS ÚLTIMA RESPOSTA ──────────────────────────────────────────
 if st.session_state.sugestoes:
@@ -391,7 +398,7 @@ def enviar_pergunta(prompt):
     </div>
     """, unsafe_allow_html=True)
     if grafico_url:
-        st.image(grafico_url, use_container_width=True)
+        st.session_state.grafico_url_pendente = grafico_url
 
     # Gera sugestões de próximas perguntas
     with st.spinner("Gerando sugestões..."):
