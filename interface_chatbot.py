@@ -132,18 +132,17 @@ Formato exato:
             region_name=st.secrets["AWS_DEFAULT_REGION"]
         )
         response = bedrock.invoke_model(
-            modelId="amazon.titan-text-express-v1",
+            modelId="us.anthropic.claude-haiku-4-5-20251001-v1:0",
             body=json.dumps({
-                "inputText": prompt_sugestoes,
-                "textGenerationConfig": {
-                    "maxTokenCount": 200,
-                    "temperature": 0.9,   # Mais temperatura = mais variedade
-                    "topP": 0.9
-                }
+                "anthropic_version": "bedrock-2023-05-31",
+                "max_tokens": 200,
+                "messages": [
+                    {"role": "user", "content": prompt_sugestoes}
+                ]
             })
         )
         body = json.loads(response["body"].read())
-        texto = body["results"][0]["outputText"]
+        texto = body["content"][0]["text"]
         inicio = texto.find("{")
         fim = texto.rfind("}") + 1
         if inicio == -1 or fim == 0:
@@ -376,7 +375,6 @@ def enviar_pergunta(prompt):
                     output = json.loads(result["output"])
                     resposta = output.get("resposta", "Não foi possível obter resposta.")
                     grafico_url = output.get("grafico_url", None)
-                    print(f"grafico_url: {grafico_url}") 
                     break
                 elif status in ["FAILED", "TIMED_OUT", "ABORTED"]:
                     resposta = "Não possuo a base de dados necessária para responder essa pergunta, ou o produto não existe nas farmácias Vera Cruz e Farma Ponte. Você tem alguma outra pergunta?"
