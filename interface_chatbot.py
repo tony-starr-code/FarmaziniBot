@@ -368,6 +368,7 @@ def enviar_pergunta(prompt):
                     output = json.loads(result["output"])
                     resposta = output.get("resposta", "Não foi possível obter resposta.")
                     grafico_url = output.get("grafico_url", None)
+                    print(f"grafico_url: {grafico_url}") 
                     break
                 elif status in ["FAILED", "TIMED_OUT", "ABORTED"]:
                     resposta = "Não possuo a base de dados necessária para responder essa pergunta, ou o produto não existe nas farmácias Vera Cruz e Farma Ponte. Você tem alguma outra pergunta?"
