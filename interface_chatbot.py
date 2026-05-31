@@ -260,11 +260,11 @@ if "sugestoes" not in st.session_state:
 # ─── MENSAGEM DE BOAS-VINDAS ──────────────────────────────────────────────────
 if len(st.session_state.messages) == 0:
     st.markdown("""
-    <div style="display:flex; justify-content:flex-start; margin:8px 0;">
-        <div class="mensagem-boas-vindas">
+    <div style="display:flex; justify-content:center; margin:8px 0;">
+        <div class="mensagem-boas-vindas" style="text-align:center;">
             <div class="titulo">👋 Olá! Eu sou o FarmazziniBot</div>
             Seu assistente virtual das farmácias <strong>Farma Ponte</strong> e <strong>Drogaria Vera Cruz</strong>. Estou aqui para te ajudar com:
-            <ul>
+            <ul style="text-align:left;">
                 <li>💊 <strong>Preços</strong> de medicamentos e produtos</li>
                 <li>🏪 <strong>Disponibilidade</strong> nas duas farmácias</li>
                 <li>🔄 <strong>Comparação</strong> entre marcas e genéricos</li>
