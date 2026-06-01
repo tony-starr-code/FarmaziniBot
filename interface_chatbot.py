@@ -158,6 +158,31 @@ Formato exato:
         print(f"Erro ao gerar sugestões: {str(e)}")
         return gerar_sugestoes_fallback(pergunta, resposta)
 
+# ─── AUTENTICAÇÃO ────────────────────────────────────────────────────────────
+if "autenticado" not in st.session_state:
+    st.session_state.autenticado = False
+
+if not st.session_state.autenticado:
+    st.markdown("""
+    <div style="display:flex; justify-content:center; margin-top:100px;">
+        <div style="background:white; padding:40px; border-radius:16px; 
+                    border:1.5px solid #CC0000; width:350px; text-align:center;">
+            <h2 style="color:#CC0000;">🔐 Acesso Restrito</h2>
+            <p style="color:#999;">Digite a senha para acessar o FarmazziniBot</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    senha = st.text_input("Senha", type="password", key="input_senha")
+    
+    if st.button("Entrar"):
+        if senha == st.secrets["SENHA_ACESSO"]:
+            st.session_state.autenticado = True
+            st.rerun()
+        else:
+            st.error("Senha incorreta!")
+    
+    st.stop()
 
 # ─── INTERFACE ───────────────────────────────────────────────────────────────
 st.set_page_config(
