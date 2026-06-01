@@ -252,6 +252,14 @@ st.markdown("""
     button[data-testid="stChatInputSubmitButton"]:hover {
     background-color: #990000 !important;
     }
+            footer {
+    background-color: #ffeceb !important;
+    color: #ffeceb !important;
+    }
+
+    footer a {
+        color: #ffeceb !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
