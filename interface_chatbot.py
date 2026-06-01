@@ -243,6 +243,15 @@ st.markdown("""
     .mensagem-boas-vindas li {
         margin-bottom: 4px;
     }
+    button[data-testid="stChatInputSubmitButton"] {
+    background-color: #CC0000 !important;
+    color: white !important;
+    border-radius: 50% !important;
+    }
+
+    button[data-testid="stChatInputSubmitButton"]:hover {
+    background-color: #990000 !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
