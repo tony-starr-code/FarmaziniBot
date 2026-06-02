@@ -3,6 +3,7 @@ import boto3
 import json
 import time
 import re
+import plotly.express as px
 
 st.set_page_config(
     page_title="Dashboard — FarmazziniBot",
