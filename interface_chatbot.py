@@ -159,7 +159,7 @@ Formato exato:
         return gerar_sugestoes_fallback(pergunta, resposta)
 
 # ─── AUTENTICAÇÃO ────────────────────────────────────────────────────────────
-if "autenticado" not in st.session_state:
+""" if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
 
 if not st.session_state.autenticado:
@@ -182,7 +182,7 @@ if not st.session_state.autenticado:
         else:
             st.error("Senha incorreta!")
     
-    st.stop()
+    st.stop() """
 
 # ─── INTERFACE ───────────────────────────────────────────────────────────────
 st.set_page_config(
