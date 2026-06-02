@@ -168,7 +168,9 @@ with col_esq:
         df_ev["data"] = df_ev["ano"] + "-" + df_ev["mes"] + "-" + df_ev["dia"]
         df_ev["media_pix"] = pd.to_numeric(df_ev["media_pix"], errors="coerce")
         df_pivot = df_ev.pivot(index="data", columns="farmácia", values="media_pix")
-        st.line_chart(df_pivot, color=["#CC0000", "#185FA5"])
+        fig = px.line(df_ev, x="data", y="media_pix", color="farmácia",
+              color_discrete_map={"farma ponte": "#CC0000", "Drogaria Vera Cruz": "#185FA5"})
+        st.plotly_chart(fig, use_container_width=True)
 
 with col_dir:
     st.markdown("#### disponibilidade atual")
@@ -177,7 +179,10 @@ with col_dir:
         df_disp = pd.DataFrame(disponibilidade)
         df_disp["total"] = pd.to_numeric(df_disp["total"])
         df_disp = df_disp.set_index("disponibilidade")
-        st.bar_chart(df_disp)
+        fig2 = px.bar(df_disp.reset_index(), x="disponibilidade", y="total",
+              color="disponibilidade",
+              color_discrete_map={"Disponível": "#1D9E75", "Indisponível": "#E24B4A"})
+        st.plotly_chart(fig2, use_container_width=True)
 
 st.markdown("---")
 
