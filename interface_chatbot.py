@@ -336,8 +336,6 @@ if len(st.session_state.messages) == 0:
                 st.rerun()
 
 # ─── HISTÓRICO ───────────────────────────────────────────────────────────────
-if "grafico_url_pendente" not in st.session_state:
-    st.session_state.grafico_url_pendente = None
 
 for message in st.session_state.messages:
     if message["role"] == "user":
@@ -359,9 +357,12 @@ for message in st.session_state.messages:
             </div>
         </div>
         """, unsafe_allow_html=True)
-if st.session_state.grafico_url_pendente:
-    st.image(st.session_state.grafico_url_pendente, use_container_width=True)
-    st.session_state.grafico_url_pendente = None
+
+        if message.get("grafico_url"):
+            st.image(
+                message["grafico_url"],
+                use_container_width=True
+            )
 
 # ─── SUGESTÕES APÓS ÚLTIMA RESPOSTA ──────────────────────────────────────────
 if st.session_state.sugestoes:
@@ -422,7 +423,7 @@ def enviar_pergunta(prompt):
         except Exception as e:
             resposta = f"Erro ao consultar: {str(e)}"
 
-    st.session_state.messages.append({"role": "assistant", "content": resposta})
+    st.session_state.messages.append({"role": "assistant","content": resposta,"grafico_url": grafico_url})
     salvar_historico(session_id, st.session_state.messages)
 
     st.markdown(f"""
