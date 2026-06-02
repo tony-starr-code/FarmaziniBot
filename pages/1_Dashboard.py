@@ -4,6 +4,11 @@ import json
 import time
 import re
 
+st.set_page_config(
+    page_title="Dashboard — FarmazziniBot",
+    page_icon="📊",
+    layout="wide"
+)
 # ─── AUTENTICAÇÃO COMPARTILHADA ──────────────────────────────────────────────
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
