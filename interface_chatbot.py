@@ -117,7 +117,9 @@ Resposta do bot: {resposta}
 Regras:
 - As sugestões devem ser diretamente relacionadas ao assunto da conversa
 - Cada pergunta deve ser diferente das outras e explorar um ângulo distinto (ex: preço, disponibilidade, alternativas semelhantes, histórico do preço)
--Você está conversando com um profissional que deseja obter dados das bases, não usuário comum que quer comprar produtos
+- Você está conversando com um profissional que deseja obter dados das bases, não usuário comum que quer comprar produtos
+- Mesmo que o usuário seja profissional saiba que as bases que temos disponíveis são sobre histórico de preços de produtos e promoções em duas drogarias: farma ponte e vera cruz.
+- Informações sobre lucratividade não estão disponíveis, não sugira nada a respeito disso
 - Frases curtas, no máximo 10 palavras cada
 - Não repita perguntas óbvias que já foram respondidas
 - Responda APENAS com JSON válido, sem nenhum texto adicional, sem markdown, sem explicações
