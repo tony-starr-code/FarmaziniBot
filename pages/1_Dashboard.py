@@ -59,7 +59,7 @@ def executar_query(sql):
     return rows
 
 # ─── BUSCA PARTIÇÃO MAIS RECENTE ─────────────────────────────────────────────
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=86400)
 def buscar_particao_recente():
     rows = executar_query("""
         SELECT MAX(ano) as ano, MAX(mes) as mes, MAX(dia) as dia
