@@ -116,7 +116,8 @@ Resposta do bot: {resposta}
 
 Regras:
 - As sugestões devem ser diretamente relacionadas ao assunto da conversa
-- Cada pergunta deve ser diferente das outras e explorar um ângulo distinto (ex: preço, disponibilidade, alternativas, dosagem, receita)
+- Cada pergunta deve ser diferente das outras e explorar um ângulo distinto (ex: preço, disponibilidade, alternativas semelhantes, histórico do preço)
+-Você está conversando com um profissional que deseja obter dados das bases, não usuário comum que quer comprar produtos
 - Frases curtas, no máximo 10 palavras cada
 - Não repita perguntas óbvias que já foram respondidas
 - Responda APENAS com JSON válido, sem nenhum texto adicional, sem markdown, sem explicações
@@ -317,7 +318,7 @@ PERGUNTAS_RAPIDAS = [
     "💊 Marcas de Dipirona e preços",
     "🩺 Comparar farmácias",
     "💉 Preço do Dorflex?",
-    "🧴 Tem protetor solar?",
+    "🧴 Quais marcas disponíveis?",
     "💰 Remédios em promoção?",
 ]
 
@@ -396,12 +397,17 @@ def enviar_pergunta(prompt):
 
     with st.spinner("Consultando..."):
         try:
+            historico_limpo = [
+                {"role": m["role"], "content": m["content"]}
+                for m in st.session_state.messages
+            ]
+
             execution = client.start_execution(
                 stateMachineArn=STEP_FUNCTION_ARN,
                 input=json.dumps({
                     "pergunta": prompt,
                     "session_id": session_id,
-                    "historico": st.session_state.messages
+                    "historico": historico_limpo
                 })
             )
 
