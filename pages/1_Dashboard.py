@@ -61,16 +61,16 @@ def executar_query(sql):
 # ─── BUSCA PARTIÇÃO MAIS RECENTE ─────────────────────────────────────────────
 @st.cache_data(ttl=86400)
 def buscar_particao_recente():
+    # Deixando a query simples. O Athena já sabe qual é o banco por causa do QueryExecutionContext
     rows = executar_query("""
         SELECT MAX(ano) as ano, MAX(mes) as mes, MAX(dia) as dia
-        FROM "base-concorrentes-equipe-3".scrappings
-        WHERE ano = (SELECT MAX(ano) FROM "base-concorrentes-equipe-3".scrappings)
-        AND mes = (SELECT MAX(mes) FROM "base-concorrentes-equipe-3".scrappings
-                  WHERE ano = (SELECT MAX(ano) FROM "base-concorrentes-equipe-3".scrappings))
+        FROM scrappings
+        WHERE ano = (SELECT MAX(ano) FROM scrappings)
+        AND mes = (SELECT MAX(mes) FROM scrappings WHERE ano = (SELECT MAX(ano) FROM scrappings))
     """)
-    if rows:
+    if rows and rows[0]["ano"]: # Garante que não veio nulo/vazio
         return rows[0]["ano"], rows[0]["mes"], rows[0]["dia"]
-    return "2026", "05", "31"
+    return "2026", "05", "31" # Data padrão caso a tabela esteja vazia
 
 # ─── INTERFACE ───────────────────────────────────────────────────────────────
 st.markdown("""
