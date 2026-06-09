@@ -73,12 +73,6 @@ def buscar_particao_recente():
     return "2026", "05", "31"
 
 # ─── INTERFACE ───────────────────────────────────────────────────────────────
-st.set_page_config(
-    page_title="Dashboard — FarmazziniBot",
-    page_icon="📊",
-    layout="wide"
-)
-
 st.markdown("""
 <style>
     .stApp { background-color: #ffeceb; }
