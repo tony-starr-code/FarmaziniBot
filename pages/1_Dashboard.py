@@ -30,7 +30,13 @@ athena = boto3.client(
     aws_secret_access_key=st.secrets["AWS_SECRET_ACCESS_KEY"],
     region_name=st.secrets["AWS_DEFAULT_REGION"]
 )
-
+try:
+    # Tenta apenas listar as queries passadas para ver se a credencial está ativa
+    athena.list_query_executions(MaxResults=1)
+    st.sidebar.success("✅ Conexão com a AWS está OK!")
+except Exception as e:
+    st.error(f"❌ A sua credencial da AWS expirou ou foi bloqueada! Erro: {e}")
+    st.stop()
 # ─── FUNÇÃO PARA EXECUTAR QUERIES ────────────────────────────────────────────
 def executar_query(sql):
     response = athena.start_query_execution(
