@@ -44,10 +44,16 @@ def executar_query(sql):
         status = athena.get_query_execution(
             QueryExecutionId=execution_id
         )["QueryExecution"]["Status"]["State"]
+        
         if status == "SUCCEEDED":
             break
         elif status in ["FAILED", "CANCELLED"]:
-            return []
+            # Captura o motivo exato do erro direto da API do Athena e joga na tela
+            status_detalhado = athena.get_query_execution(QueryExecutionId=execution_id)["QueryExecution"]["Status"]
+            erro_athena = status_detalhado.get("StateChangeReason", "Erro desconhecido")
+            st.error(f"❌ Erro na Query do Athena: {erro_athena}")
+            st.stop()  # Para a execução do Streamlit aqui para você ler o erro
+            
         time.sleep(1)
 
     results = athena.get_query_results(QueryExecutionId=execution_id)
@@ -58,19 +64,19 @@ def executar_query(sql):
         rows.append(dict(zip(columns, valores)))
     return rows
 
-# ─── BUSCA PARTIÇÃO MAIS RECENTE ─────────────────────────────────────────────
-@st.cache_data(ttl=86400)
+
+# ─── BUSCA PARTIÇÃO MAIS RECENTE (SEM CACHE PARA PODER DEBUGAR) ──────────────
+# @st.cache_data(ttl=86400)  <-- COMENTADO TEMPORARIAMENTE PARA NÃO GUARDAR O ERRO
 def buscar_particao_recente():
-    # Deixando a query simples. O Athena já sabe qual é o banco por causa do QueryExecutionContext
     rows = executar_query("""
         SELECT MAX(ano) as ano, MAX(mes) as mes, MAX(dia) as dia
         FROM scrappings
         WHERE ano = (SELECT MAX(ano) FROM scrappings)
         AND mes = (SELECT MAX(mes) FROM scrappings WHERE ano = (SELECT MAX(ano) FROM scrappings))
     """)
-    if rows and rows[0]["ano"]: # Garante que não veio nulo/vazio
+    if rows and rows[0]["ano"]:
         return rows[0]["ano"], rows[0]["mes"], rows[0]["dia"]
-    return "2026", "05", "31" # Data padrão caso a tabela esteja vazia
+    return "2026", "05", "31"
 
 # ─── INTERFACE ───────────────────────────────────────────────────────────────
 st.markdown("""
