@@ -171,7 +171,7 @@ if not st.session_state.autenticado:
         <div style="background:white; padding:40px; border-radius:16px; 
                     border:1.5px solid #CC0000; width:350px; text-align:center;">
             <h2 style="color:#CC0000;">🔐 Acesso Restrito</h2>
-            <p style="color:#999;">Digite a senha para acessar o FarmazziniBot</p>
+            <p style="color:#999;">Digite a senha para acessar o Bot</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -189,7 +189,7 @@ if not st.session_state.autenticado:
 
 # ─── INTERFACE ───────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="FarmazziniBot",
+    page_title="Bot",
     page_icon="💊",
     layout="centered"
 )
@@ -303,7 +303,7 @@ if len(st.session_state.messages) == 0:
     st.markdown("""
     <div style="display:flex; justify-content:center; margin:8px 0;">
         <div class="mensagem-boas-vindas" style="text-align:center;">
-            <div class="titulo">👋 Olá! Eu sou o FarmazziniBot</div>
+            <div class="titulo">👋 Olá! Eu sou o Bot</div>
             Seu assistente virtual das farmácias <strong>Farma Ponte</strong> e <strong>Drogaria Vera Cruz</strong>. Estou aqui para te ajudar com:
             <ul style="text-align:left;">
                 <li>💊 <strong>Preços</strong> de medicamentos e produtos</li>

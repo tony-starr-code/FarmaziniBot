@@ -92,7 +92,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("## 📊 Dashboard — FarmazziniBot")
+st.markdown("## 📊 Dashboard — Farmácia")
 st.markdown("---")
 
 ano, mes, dia = buscar_particao_recente()
