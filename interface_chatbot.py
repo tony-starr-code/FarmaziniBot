@@ -107,8 +107,14 @@ def gerar_sugestoes_fallback(pergunta, resposta):
     return random.sample(genericas, 3)
 
 
-def gerar_sugestoes(pergunta, resposta):
-    """Gera 3 sugestões de próximas perguntas com base no contexto."""
+import json
+import boto3
+import streamlit as st
+from typing import List
+
+def gerar_sugestoes(pergunta: str, resposta: str, max_tentativas: int = 2) -> List[str]:
+    """Gera 3 sugestões de próximas perguntas com retry automático."""
+    
     prompt_sugestoes = f"""Você é um assistente de farmácia. Com base nessa troca de mensagens, gere exatamente 3 sugestões de perguntas que o cliente pode querer fazer em seguida.
 
 Pergunta do cliente: {pergunta}
@@ -116,50 +122,75 @@ Resposta do bot: {resposta}
 
 Regras:
 - As sugestões devem ser diretamente relacionadas ao assunto da conversa
-- Cada pergunta deve ser diferente das outras e explorar um ângulo distinto (ex: preço, disponibilidade, alternativas semelhantes, histórico do preço)
-- Você está conversando com um profissional que deseja obter dados das bases, não usuário comum que quer comprar produtos
-- Mesmo que o usuário seja profissional saiba que as bases que temos disponíveis são sobre histórico de preços de produtos e promoções em duas drogarias: farma ponte e vera cruz.
-- Informações sobre lucratividade não estão disponíveis, não sugira nada a respeito disso
-- Frases curtas, no máximo 10 palavras cada
-- Não repita perguntas óbvias que já foram respondidas
-- Responda APENAS com JSON válido, sem nenhum texto adicional, sem markdown, sem explicações
+- Cada pergunta deve ser diferente das outras e explorar um ângulo distinto
+- Você está conversando com um profissional que deseja obter dados das bases
+- Bases disponíveis: histórico de preços e promoções (Farma Ponte e Vera Cruz)
+- Sem informações sobre lucratividade
+- Frases curtas, máximo 10 palavras cada
+- Não repita perguntas óbvias já respondidas
+- APENAS JSON válido, sem markdown nem explicações
 
-Formato exato:
-{{"sugestoes": ["pergunta 1", "pergunta 2", "pergunta 3"]}}"""
+Formato: {{"sugestoes": ["pergunta 1", "pergunta 2", "pergunta 3"]}}"""
 
-    try:
-        bedrock = boto3.client(
-            "bedrock-runtime",
-            aws_access_key_id=st.secrets["AWS_ACCESS_KEY_ID"],
-            aws_secret_access_key=st.secrets["AWS_SECRET_ACCESS_KEY"],
-            region_name=st.secrets["AWS_DEFAULT_REGION"]
-        )
-        response = bedrock.invoke_model(
-            modelId="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-            body=json.dumps({
-                "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 200,
-                "messages": [
-                    {"role": "user", "content": prompt_sugestoes}
-                ]
-            })
-        )
-        body = json.loads(response["body"].read())
-        texto = body["content"][0]["text"]
-        inicio = texto.find("{")
-        fim = texto.rfind("}") + 1
-        if inicio == -1 or fim == 0:
-            raise ValueError("JSON não encontrado na resposta")
-        sugestoes = json.loads(texto[inicio:fim]).get("sugestoes", [])
-        # Garante exatamente 3 sugestões não vazias
-        sugestoes = [s for s in sugestoes if s.strip()][:3]
-        if len(sugestoes) < 3:
-            raise ValueError("Menos de 3 sugestões retornadas")
-        return sugestoes
-    except Exception as e:
-        # Fallback dinâmico e contextual em vez de 3 perguntas fixas
-        print(f"Erro ao gerar sugestões: {str(e)}")
-        return gerar_sugestoes_fallback(pergunta, resposta)
+    for tentativa in range(max_tentativas):
+        try:
+            bedrock = boto3.client(
+                "bedrock-runtime",
+                aws_access_key_id=st.secrets["AWS_ACCESS_KEY_ID"],
+                aws_secret_access_key=st.secrets["AWS_SECRET_ACCESS_KEY"],
+                region_name=st.secrets["AWS_DEFAULT_REGION"]
+            )
+            
+            response = bedrock.invoke_model(
+                modelId="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                body=json.dumps({
+                    "anthropic_version": "bedrock-2023-05-31",
+                    "max_tokens": 300,  # Aumentado para segurança
+                    "messages": [{"role": "user", "content": prompt_sugestoes}]
+                })
+            )
+            
+            body = json.loads(response["body"].read())
+            texto = body["content"][0]["text"]
+            
+            # Parsing JSON mais robusto
+            try:
+                # Tenta parsear direto primeiro
+                dados = json.loads(texto)
+            except json.JSONDecodeError:
+                # Se falhar, extrai substring com {}
+                inicio = texto.find("{")
+                fim = texto.rfind("}") + 1
+                if inicio == -1 or fim == 0:
+                    raise ValueError("JSON não encontrado")
+                dados = json.loads(texto[inicio:fim])
+            
+            sugestoes = dados.get("sugestoes", [])
+            
+            # Validação rigorosa
+            sugestoes_validas = [
+                s.strip() 
+                for s in sugestoes 
+                if isinstance(s, str) and s.strip() and len(s.strip()) <= 100
+            ]
+            sugestoes_validas = list(dict.fromkeys(sugestoes_validas))  # Remove duplicatas
+            
+            if len(sugestoes_validas) >= 3:
+                return sugestoes_validas[:3]
+            else:
+                raise ValueError(f"Apenas {len(sugestoes_validas)} sugestões válidas")
+        
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            if tentativa < max_tentativas - 1:
+                print(f"Tentativa {tentativa + 1} falhou: {str(e)}. Tentando novamente...")
+                continue
+            else:
+                print(f"Erro final ao gerar sugestões: {str(e)}")
+                return gerar_sugestoes_fallback(pergunta, resposta)
+        
+        except Exception as e:
+            print(f"Erro inesperado: {str(e)}")
+            return gerar_sugestoes_fallback(pergunta, resposta)
 
 # ─── AUTENTICAÇÃO ────────────────────────────────────────────────────────────
 if "autenticado" not in st.session_state:
